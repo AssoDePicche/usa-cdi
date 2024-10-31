@@ -2,15 +2,82 @@ import pandas
 
 from pandas import DataFrame
 
-from typing import List
+from typing import Dict, List
 
-if __name__ == '__main__':
-    dataset: DataFrame = pandas.read_csv('dataset.csv')
+def read_from(filename: str) -> DataFrame:
+    return pandas.read_csv("dataset.csv", dtype={
+        "YearStart": "int64",
+        "YearEnd": "int64",
+        "LocationAbbr": "object",
+        "LocationDesc": "object",
+        "DataSource": "object",
+        "Topic": "object",
+        "Question": "object",
+        "Response": "float64",
+        "DataValueUnit": "object",
+        "DataValueType": "object",
+        "DataValue": "object",
+        "DataValueAlt": "float64",
+        "DataValueFootnoteSymbol": "object",
+        "DatavalueFootnote": "object",
+        "LowConfidenceLimit": "float64",
+        "HighConfidenceLimit": "float64",
+        "StratificationCategory1": "object",
+        "Stratification1": "object",
+        "StratificationCategory2": "float64",
+        "Stratification2": "float64",
+        "StratificationCategory3": "float64",
+        "Stratification3": "float64",
+        "GeoLocation": "object",
+        "ResponseID": "float64",
+        "LocationID": "int64",
+        "TopicID": "object",
+        "QuestionID": "object",
+        "DataValueTypeID": "object",
+        "StratificationCategoryID1": "object",
+        "StratificationID1": "object",
+        "StratificationCategoryID2": "float64",
+        "StratificationID2": "float64",
+        "StratificationCategoryID3": "float64",
+        "StratificationID3": "float64",
+    }).drop(columns=[
+        "LocationDesc",
+        "Response",
+        "DataValueAlt",
+        "DataValueUnit",
+        "DataValueFootnoteSymbol",
+        "DatavalueFootnote",
+        "StratificationCategory2",
+        "Stratification2",
+        "StratificationCategory3",
+        "Stratification3",
+        "GeoLocation",
+        "ResponseID",
+        "LocationID",
+        "LocationDesc",
+        "LocationID",
+        "DataValueTypeID",
+        "StratificationCategoryID2",
+        "StratificationID2",
+        "StratificationCategoryID3",
+        "StratificationID3",
+        "TopicID",
+        "QuestionID",
+    ], axis=1)
 
-    for column in dataset.columns:
-        ratio: float = dataset[column].isnull().sum() / len(dataset)
 
-        if ratio > 0.05:
-            dataset = dataset.drop(columns=[column], axis=1)
+def split(dataframe: DataFrame, column: str) -> Dict[str, DataFrame]:
+    dictionary: Dict[str, DataFrame] = {}
 
-    dataset = dataset.drop(columns=['GeoLocation', 'LocationDesc', 'LocationID'], axis=1)
+    for key in dataframe[column].unique():
+        dictionary[key] = dataframe[dataframe[column] == key].drop(columns=[column], axis=1)
+
+    return dictionary
+
+
+if __name__ == "__main__":
+    dataset: DataFrame = read_from("dataset.csv")
+
+    topic_filtered: Dict[str, DataFrame] = split(dataset, "Topic")
+
+    print(dataset.info())
