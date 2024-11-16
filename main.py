@@ -52,6 +52,7 @@ def read_from(filename: str) -> DataFrame:
             "DataValueUnit",
             "DataValueFootnoteSymbol",
             "DatavalueFootnote",
+            "StratificationCategory1",
             "StratificationCategory2",
             "Stratification2",
             "StratificationCategory3",
@@ -62,6 +63,7 @@ def read_from(filename: str) -> DataFrame:
             "LocationDesc",
             "LocationID",
             "DataValueTypeID",
+            "StratificationID1",
             "StratificationCategoryID2",
             "StratificationID2",
             "StratificationCategoryID3",
@@ -87,7 +89,18 @@ def split(dataframe: DataFrame, column: str) -> Dict[str, DataFrame]:
 if __name__ == "__main__":
     dataset: DataFrame = read_from("dataset.csv")
 
+    remap: Dict[str, str] = {
+        "Stratification1": "Stratification",
+        "StratificationCategoryID1": "StratificationCategory",
+        "LocationAbbr": "Location"
+    }
+
     dataset["ObservationYears"] = dataset["YearEnd"] - dataset["YearStart"]
+
+    for key, value in remap.items():
+        dataset[value] = dataset[key]
+
+    dataset = dataset.drop(columns=remap.keys(), axis=1)
 
     dataset = dataset.drop(columns=["YearEnd", "YearStart"], axis=1)
 
