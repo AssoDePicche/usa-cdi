@@ -74,18 +74,6 @@ def read_from(filename: str) -> DataFrame:
         axis=1,
     )
 
-
-def split(dataframe: DataFrame, column: str) -> Dict[str, DataFrame]:
-    dictionary: Dict[str, DataFrame] = {}
-
-    for key in dataframe[column].unique():
-        dictionary[key] = dataframe[dataframe[column] == key].drop(
-            columns=[column], axis=1
-        )
-
-    return dictionary
-
-
 if __name__ == "__main__":
     dataset: DataFrame = read_from("dataset.csv")
 
@@ -104,4 +92,4 @@ if __name__ == "__main__":
 
     dataset = dataset.drop(columns=["YearEnd", "YearStart"], axis=1)
 
-    topic_filtered: Dict[str, DataFrame] = split(dataset, "Topic")
+    dataset.groupby(["Topic", "Question", "Location"])
